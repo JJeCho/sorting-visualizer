@@ -1,12 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
-const SortVisualizer = () => {
-  const [data, setData] = useState(generateRandomArray(20));
+const SortingVisualizer = () => {
+  const [data, setData] = useState([]);
+  const [arraySize, setArraySize] = useState(20);
+  const svgRef = useRef(null);
+  const maxSvgWidth = 50 * 25;
+  const padding = 2;
 
   function generateRandomArray(length) {
     return Array.from({ length }, () => Math.floor(Math.random() * 100) + 1);
   }
+
+  const generateNewArray = () => {
+    setData(generateRandomArray(arraySize));
+  };
+
+  const handleArraySizeChange = (e) => {
+    const newSize = parseInt(e.target.value, 10);
+    setArraySize(newSize);
+  };
 
   async function bubbleSort() {
     let array = [...data];
@@ -30,36 +43,49 @@ const SortVisualizer = () => {
     bubbleSort();
   };
 
-  const generateNewArray = () => {
-    setData(generateRandomArray(20));
-  };
+  useEffect(() => {
+    setData(generateRandomArray(arraySize));
+  }, [arraySize]);
 
   useEffect(() => {
-    const svg = d3.select('#sorting-container').append('svg').attr('height', 150);
+    const svgWidth = arraySize > 50 ? maxSvgWidth : arraySize * 25;
+
+    const svg = d3.select(svgRef.current).attr('height', 150).attr('width', svgWidth);
+
+    svg.selectAll('*').remove();
+
+    const rectWidth = arraySize > 50 ? maxSvgWidth / arraySize : 20;
 
     svg
-    .selectAll('rect')
-    .data(data)
-    .enter()
-    .append('rect')
-    .attr('x', (d, i) => i * 25)
-    .attr('y', (d) => 150 - d)
-    .attr('width', 20)
-    .attr('height', (d) => d)
-    .attr('fill', 'steelblue');
+      .selectAll('rect')
+      .data(data)
+      .enter()
+      .append('rect')
+      .attr('x', (d, i) => i * (rectWidth+padding))
+      .attr('y', (d) => 150 - d)
+      .attr('width', rectWidth)
+      .attr('height', (d) => d)
+      .attr('fill', 'steelblue');
+  }, [data, arraySize, maxSvgWidth, padding]);
 
-    return () => {
-      d3.select('#sorting-container').selectAll('svg').remove();
-    };
-  }, [data]);
 
   return (
     <div>
-      <div id="sorting-container"></div>
+      <div>
+        <label htmlFor="arraySize">Array Size:</label>
+        <input
+          type="number"
+          id="arraySize"
+          value={arraySize}
+          onChange={handleArraySizeChange}
+          min="1"
+        />
+        <button onClick={generateNewArray}>Generate New Array</button>
+      </div>
+      <svg ref={svgRef}></svg>
       <button onClick={startSorting}>Start Sorting</button>
-      <button onClick={generateNewArray}>Generate New Array</button>
     </div>
   );
 };
 
-export default SortVisualizer;
+export default SortingVisualizer;
