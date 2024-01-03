@@ -5,25 +5,25 @@
 
 #sorting-visualizer-options {
   flex: 1;
-  border-right: 1px solid #ccc;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
+  align-items: center;
+  background-color: #f0f0f0; /* Adjust background color as needed */
 }
 
 #sorting-visualizer-svg {
   flex: 4;
+  height: 100%;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
+  align-items: center;
+  background-color: #e0e0e0; /* Adjust background color as needed */
 }
 
-#sorting-svg {
-  width: 100%;
-  height: 100%;
+#sorting-visualizer-svg {
+  max-width: 100%;
+  padding: 20px; /* Add padding around the SVG */
+  box-sizing: border-box; /* Include padding in the width calculation */
 }

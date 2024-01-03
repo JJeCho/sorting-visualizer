@@ -226,27 +226,33 @@ const SortingVisualizer = () => {
     setData(generateRandomArray(arraySize));
   }, [arraySize]);
 
+  
   useEffect(() => {
     const svgWidth = arraySize > 50 ? maxSvgWidth : arraySize * 25;
     const svgHeight = 200;
   
+    const containerWidth = Math.min(window.innerWidth, svgWidth); // Adjust the width based on window size
+  
     const svg = d3
       .select(svgRef.current)
-      .attr("width", "100%")
-      .attr("height", "100%")
-      .attr("preserveAspectRatio", "xMidYMid meet");
+      .attr("width", containerWidth)
+      .attr("height", svgHeight)
+      .attr("preserveAspectRatio", "xMidYMid meet")
+      .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`); // Set the viewBox for responsive scaling
   
     svg.selectAll("*").remove();
   
-    const rectWidth =
-      arraySize > 50 ? (maxSvgWidth - (arraySize - 1) * padding) / arraySize : 20;
+    const rectPadding = 5; // Adjust the padding between rectangles
+  
+    const totalPaddingWidth = (arraySize - 1) * rectPadding;
+    const rectWidth = (containerWidth - totalPaddingWidth) / arraySize;
   
     svg
       .selectAll("g")
       .data(data)
       .enter()
       .append("g")
-      .attr("transform", (d, i) => `translate(${i * (rectWidth + padding)}, 0)`)
+      .attr("transform", (d, i) => `translate(${i * (rectWidth + rectPadding)}, 0)`)
       .append("rect")
       .attr("y", (d) => svgHeight - d)
       .attr("width", rectWidth)
@@ -258,14 +264,13 @@ const SortingVisualizer = () => {
       .data(data)
       .enter()
       .append("text")
-      .attr("x", (d, i) => i * (rectWidth + padding) + rectWidth / 2)
+      .attr("x", (d, i) => i * (rectWidth + rectPadding) + rectWidth / 2)
       .attr("y", (d) => svgHeight - d - 5)
       .attr("text-anchor", "middle")
       .text((d) => d)
       .attr("font-size", "12px")
       .attr("fill", "black");
-  }, [data, arraySize, maxSvgWidth, padding]);
-  
+  }, [data, arraySize, maxSvgWidth]);
   
   return (
     <div id="sorting-visualizer-container">
