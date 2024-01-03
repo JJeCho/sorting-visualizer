@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as d3 from "d3";
 import "./SortVisualizer.css";
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 /*
 WIP: Add stop sort functionality
+Visualize comparisons. Not just swaps
 Fix CSS for responsiveness and better appearance
 */
 const SortingVisualizer = () => {
@@ -266,33 +269,38 @@ const SortingVisualizer = () => {
   
   return (
     <div id="sorting-visualizer-container">
+      <Form>
       <div id="sorting-visualizer-options">
         <div id="sorting-visualizer-array">
-          <label htmlFor="arraySize">Array Size:</label>
-          <input
+          <Form.Group controlId="arraySize">
+          <Form.Label>Array Size:</Form.Label>
+
+          <Form.Control
             type="number"
             id="arraySize"
             value={arraySize}
             onChange={handleArraySizeChange}
             min="1"
           />
-          <button onClick={generateNewArray}>Generate New Array</button>
+          </Form.Group>
+          <Button variant="primary" onClick={generateNewArray}>Generate New Array</Button>{' '}
         </div>
         <div id="sorting-visualizer-speed">
-          <label htmlFor="speedSlider">Animation Speed:</label>
-          <input
-            type="range"
-            id="speedSlider"
+          <Form.Group controlId="speedSlider">
+          <Form.Label>Animation Speed:</Form.Label>
+          <Form.Range
             value={animationSpeed}
             min="1"
             max="100"
             step="1"
             onChange={handleAnimationSpeedChange}
           />
+      </Form.Group>
         </div>
         <div id="sorting-visualizer-algorithm">
-          <label htmlFor="algorithmSelect">Select Sorting Algorithm:</label>
-          <select
+        <Form.Group controlId="algorithmSelect">
+          <Form.Label>Select Sorting Algorithm:</Form.Label>
+          <Form.Select
             id="algorithmSelect"
             value={selectedAlgorithm}
             onChange={handleAlgorithmChange}
@@ -302,12 +310,12 @@ const SortingVisualizer = () => {
             <option value="selectionSort">Selection Sort</option>
             <option value="quickSort">Quick Sort</option>
             <option value="mergeSort">Merge Sort</option>
-          </select>
+          </Form.Select>
+          </Form.Group>
         </div>
-        <button id="sorting-visualizer-button" onClick={startSorting}>
-          Start Sorting
-        </button>
+        <Button variant="primary" onClick={startSorting}>Start Sorting</Button>{' '}
       </div>
+      </Form>
       <div id="sorting-visualizer-svg">
         <svg id="sorting-svg" ref={svgRef}></svg>
       </div>
