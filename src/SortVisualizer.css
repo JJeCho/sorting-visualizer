@@ -1,0 +1,29 @@
+#sorting-visualizer-container {
+  display: flex;
+  height: 100vh;
+}
+
+#sorting-visualizer-options {
+  flex: 1;
+  border-right: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#sorting-visualizer-svg {
+  flex: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#sorting-svg {
+  width: 100%;
+  height: 100%;
+}
