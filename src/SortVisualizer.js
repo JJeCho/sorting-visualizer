@@ -11,12 +11,15 @@ Fix CSS for responsiveness and better appearance
 const SortingVisualizer = () => {
   const [data, setData] = useState([]);
   const [arraySize, setArraySize] = useState(20);
-  const [animationSpeed, setAnimationSpeed] = useState(10); // Initial animation speed
+  const [animationSpeed, setAnimationSpeed] = useState(1); // Initial animation speed
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("bubbleSort"); // Initial algorithm selection
   const [isSorting, setIsSorting] = useState(false);
   const svgRef = useRef(null);
   const maxSvgWidth = 1800;
   const padding = 10;
+  const [abortController, setAbortController] = useState(new AbortController());
+  const signal = abortController.signal;
+  
 
   // Reset animation after sort with new generated array
   /*
@@ -26,6 +29,7 @@ const SortingVisualizer = () => {
     }
   }, [arraySize, isSorting]);
   */
+
 
   function generateRandomArray(length) {
     return Array.from({ length }, () => Math.floor(Math.random() * 100) + 1);
@@ -45,13 +49,20 @@ const SortingVisualizer = () => {
     setAnimationSpeed(e.target.value);
   };
 
-  async function bubbleSort() {
+  async function bubbleSort(signal) {
     let array = [...data];
     let n = array.length;
     let swapped;
+  
     do {
       swapped = false;
+  
       for (let i = 0; i < n - 1; i++) {
+        if (signal.aborted) {
+          console.log('Sorting canceled');
+          return;
+        }
+  
         if (array[i] > array[i + 1]) {
           [array[i], array[i + 1]] = [array[i + 1], array[i]];
           swapped = true;
@@ -60,10 +71,18 @@ const SortingVisualizer = () => {
           );
           setData([...array]);
         }
+  
+        // Check for cancellation after each iteration
+        if (signal.aborted) {
+          console.log('Sorting canceled');
+          return;
+        }
       }
+  
       n--;
     } while (swapped);
   }
+  
 
   async function insertionSort() {
     let array = [...data];
@@ -192,33 +211,34 @@ const SortingVisualizer = () => {
     setSelectedAlgorithm(e.target.value);
   };
 
-  const handleStopSorting = () => {
-    setIsSorting(false);
-  };
-
   const startSorting = async () => {
     setIsSorting(true);
 
     switch (selectedAlgorithm) {
       case "bubbleSort":
-        await bubbleSort();
+        await bubbleSort(signal);
         break;
       case "insertionSort":
-        await insertionSort();
+        await insertionSort(signal);
         break;
       case "selectionSort":
-        await selectionSort();
+        await selectionSort(signal);
         break;
       case "quickSort":
-        await startQuickSort();
+        await startQuickSort(signal);
         break;
       case "mergeSort":
-        await startMergeSort();
+        await startMergeSort(signal);
         break;
       default:
         break;
     }
 
+    setIsSorting(false);
+  };
+
+  const cancelSorting = () => {
+    abortController.abort();
     setIsSorting(false);
   };
 
@@ -319,6 +339,7 @@ const SortingVisualizer = () => {
           </Form.Group>
         </div>
         <Button variant="primary" onClick={startSorting}>Start Sorting</Button>{' '}
+        <Button variant="" onClick={cancelSorting}>Stop Sorting</Button>{' '}
       </div>
       </Form>
       <div id="sorting-visualizer-svg">
